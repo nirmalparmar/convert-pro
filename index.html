@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Pro - Free CSV, JSON, SVG Converter!</title>
+  </head>
+  <style>
+    .nav-container{
+      display: flex;
+      height: 50px;
+      width: 100%;
+      background-color: #fff;
+      box-shadow: 1px 1px 8px 2px #0000001c;
+      align-items: center; padding-left: 15px;
+      position: fixed;
+      top: 0;
+      gap: 15px;
+    }
+    .menu-btn{
+      display: none;
+    }
+    .nav{
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-group a{
+      text-decoration: none;
+      color: unset;
+    }
+    .nav-group .desk-nav-list {
+      list-style: none;
+      padding: 0px 50px;
+    }
+    .nav-group.desktop li {
+      float: left;
+      padding-right: 30px;
+      font-weight: 500;
+    }
+    li a.active{
+      padding-bottom: 5px;
+      border-bottom: 2px solid #3f51b5;
+    }
+    .logo-cont{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .logo-cont .logo{
+      height: 30px;
+    }
+    @media (min-width: 800px) {
+      .nav-group.mobile{
+        display: none;
+      }
+      .backdrop{
+        display: none;
+      }
+    }
+    @media (max-width: 800px) {
+      .menu-btn{
+        display: inline-flex;
+        cursor: pointer;
+      }
+      .nav-group.desktop{
+        display: none;
+      }
+      .nav-group.mobile{
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        left: -100%;
+        top: 0;
+        background-color: #fff;
+        height: 100vh;
+        width: 250px;
+        z-index: 2;
+        transition: left 0.5s cubic-bezier(0.4,0,0.2,1);
+      }
+      .nav-group.mobile.open{
+        left: 0;
+        transition: left 0.5s cubic-bezier(0.4,0,0.2,1);
+      }
+      .nav-group.mobile.open .nav-close img{
+        transform: rotate(360deg);
+        transition: transform 0.7s;
+      }
+      .nav-close{
+        padding: 15px;
+        display: inline-flex;
+      }
+      .mob-nav-list{
+        list-style: none;
+        padding: 20px 20px 20px 60px;
+      }
+      .mob-nav-list li{
+        height: 35px;
+      }
+      .backdrop{
+        position: fixed;
+        top: 0;
+        left: -100%;
+        background-color: #000;
+        opacity: 0;
+        height: 100vh;
+        width: 100vw;
+        z-index: 1;
+      }
+      .backdrop.disp{
+        left: 0;
+        opacity: 0.5;
+        transition: opacity 0.5s;
+      }
+    }
+  </style>
+  <body>
+    <div class="nav-container"> 
+      <div class="menu-btn">
+        <img id="menu" src="/menu.svg" onclick="openMenu(event)">
+      </div>
+      <div class="nav">
+        <div class="nav-group"> 
+          <a href="/home">
+            <div class="logo-cont">
+              <img class="logo" src="/cp-logo.svg"> Convert Pro 
+            </div>
+          </a>
+        </div>
+        <div class="nav-group desktop">
+          <ul class="desk-nav-list">
+            <li><a name="home" href="/home">Home</a></li>
+            <li><a name="contact" href="/contact">Contact</a></li>
+            <li><a name="about" href="/about">About Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="nav-group mobile">
+        <div class="nav-close">
+          <img class="close" src="/close.svg" onclick="closeMenu(event)">
+        </div>
+        <ul class="mob-nav-list">
+          <li><a name="home" href="/home">Home</a></li>
+          <li><a name="contact" href="/contact">Contact</a></li>
+          <li><a name="about" href="/about">About Us</a></li>
+        </ul>
+      </div>
+      <div id="bd" class="backdrop"></div>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+      let path = window.location.pathname
+      document.querySelectorAll('a').forEach(el => {
+        if (path.includes(el.name)) el.className = 'active'
+      })
+      const openMenu = (e) => {
+        let drawer = document.getElementsByClassName('nav-group mobile')[0]
+        let bd = document.getElementById('bd')
+        drawer.classList.add('open')
+        bd.classList.add('disp')
+        bd.addEventListener('click', closeMenu)
+      }
+      const closeMenu = (e) => {
+        document.getElementsByClassName('nav-group mobile open')[0].className = 'nav-group mobile'
+        document.getElementById('bd').className = 'backdrop'
+        e.stopPropagation()
+      }
+    </script>
+  </body>
+</html>
