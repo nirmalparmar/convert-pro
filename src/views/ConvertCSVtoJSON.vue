@@ -26,6 +26,7 @@ export default {
         height: 100%;
         width: 100%;
         background: #f7f7f7;
+        overflow: auto;
 
         .title-container{
             display: flex;

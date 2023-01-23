@@ -1,14 +1,5 @@
 <template>
     <div class="csv-container"> 
-        <!-- <div class="container"> 
-            <div class="input-area"> 
-                <textarea></textarea>
-            </div>
-            <div class="input-container">
-                <div class="btn">Import File</div>
-                <div class="input"><input type="text" v-model="url" placeholder="URL"></div>
-            </div>
-        </div> -->
         <div class="input-container"> 
             <Tab :tabItems="tabItems" :activeTab="activeTab" @activeTab="activeTab = $event.value" />
             <div class="file-input-container" v-if="activeTab == 'file'">
@@ -26,10 +17,12 @@
             </div>
             <div class="options">
                 <div class="option-title">Parser Setting</div>
-                <input type="checkbox" v-model="headerRow"> Header Row
+                <Options @configChange="onConfigChange($event)"/>
             </div>
             <div class="btn-container">
-                <button class="btn" @click="convertCsv" :disabled="!file && !csvString.length" :class="{disabled: !file && !csvString.length}"> Convert </button>
+                <button class="btn" @click="convertCsv" :disabled="!file && !csvString.length" :class="{disabled: !file && !csvString.length}">
+                    <SvgComponent icon="right"></SvgComponent> Convert 
+                </button>
             </div>
         </div>
     </div>
@@ -39,38 +32,40 @@
 import pParser from 'papaparse'
 import SvgComponent from './SvgComponent.vue';
 import Tab from './Tab.vue';
-let config = {
-	delimiter: "",	// auto-detect
-	newline: "",	// auto-detect
-	quoteChar: '"',
-	escapeChar: '"',
-	header: false,
-	transformHeader: undefined,
-	dynamicTyping: false,
-	preview: 0,
-	encoding: "",
-	worker: false,
-	comments: false,
-	step: undefined,
-	complete: undefined,
-	error: undefined,
-	download: false,
-	downloadRequestHeaders: undefined,
-	downloadRequestBody: undefined,
-	skipEmptyLines: false,
-	chunk: undefined,
-	chunkSize: undefined,
-	fastMode: undefined,
-	beforeFirstChunk: undefined,
-	withCredentials: undefined,
-	transform: undefined,
-	// delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
-}
+import Options from './Options.vue';
+// let config = {
+// 	delimiter: "",	// auto-detect
+// 	newline: "",	// auto-detect
+// 	quoteChar: '"',
+// 	escapeChar: '"',
+// 	header: false,
+// 	transformHeader: undefined,
+// 	dynamicTyping: false,
+// 	preview: 0,
+// 	encoding: "",
+// 	worker: false,
+// 	comments: false,
+// 	step: undefined,
+// 	complete: undefined,
+// 	error: undefined,
+// 	download: false,
+// 	downloadRequestHeaders: undefined,
+// 	downloadRequestBody: undefined,
+// 	skipEmptyLines: false,
+// 	chunk: undefined,
+// 	chunkSize: undefined,
+// 	fastMode: undefined,
+// 	beforeFirstChunk: undefined,
+// 	withCredentials: undefined,
+// 	transform: undefined,
+// 	// delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+// }
 
 export default {
     components:{
         SvgComponent,
-        Tab
+        Tab,
+        Options
     },
     data(){
         return{
@@ -93,7 +88,8 @@ export default {
                     name:'URL',
                     value: 'url'
                 }
-            ]
+            ],
+            config:{}
         }
     },
     mounted(){
@@ -132,14 +128,21 @@ export default {
         convertCsv(){
             if(this.activeTab == 'file'){
                 pParser.parse(this.file, {
-                    header: this.headerRow, 
-                    complete: (data) => { this.download('parsed_csv.json', JSON.stringify(data)) },
+                    ...this.config,
+                    complete: (data) => { this.download('parsed_csv.json', JSON.stringify(data.data)) },
                     worker: true
                 })
             } else if(this.activeTab == 'input'){
-                let parsedStr = pParser.parse(this.csvString, {header: this.headerRow})
-                this.download('parsed_csv.json', JSON.stringify(parsedStr))
+                pParser.parse(this.csvString, 
+                    {
+                        ...this.config,
+                        complete: (data) => { this.download('parsed_csv.json', JSON.stringify(data.data)) },
+                    }
+                )
             }
+        },
+        onConfigChange(config){
+            this.config = config
         }
     }
     
@@ -267,17 +270,19 @@ export default {
             justify-content: center;
             padding: 20px;
             .btn{
-                padding: 10px;
-                background: #3f51b5;
+                padding: 10px 15px;
+                background: #0C0ADB;
                 font-weight: 500;
                 border: none;
                 border-radius: 4px;
                 color: #fff;
                 cursor: pointer;
+                display: inline-flex;
+                align-items: center;
             }
         }
         .option-title{
-            padding: 10px;
+            padding: 15px 0;
             font-weight: 600;
         }
     }
