@@ -27,13 +27,14 @@ export default {
         width: 100%;
         background: #f7f7f7;
         overflow: auto;
+        color: #4a4a4a;
 
         .title-container{
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            padding: 30px;
 
             .title{
                 font-size: 30px;

@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Convert CSV files to a variety of formats, such as Excel, JSON, and more. Easy to use and fast conversion. Convert JSON to CSV, TSV files. SVG to PNG, JPG, JPEG converter. Convert-Pro">
+    <meta name="keywords" content="csv, conversion, svg, png, jpg, editor, json, spreadsheet">
+    <meta name="robots" content="index, follow">
     <title>Convert Pro - Free CSV, JSON, SVG Converter!</title>
   </head>
+  <!-- Google tag (gtag.js) -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-QWJ9L5J02L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-QWJ9L5J02L');
+  </script> -->
   <style>
     .nav-container{
       display: flex;
@@ -13,7 +25,10 @@
       width: 100%;
       background-color: #fff;
       box-shadow: 1px 1px 8px 2px #0000001c;
-      align-items: center; padding-left: 15px;
+      align-items: center; 
+      padding-left: 2rem;
+      padding-right: 2rem;
+      font-size: 0.87rem;
       position: fixed;
       top: 0;
       gap: 15px;
@@ -63,6 +78,10 @@
       }
     }
     @media (max-width: 800px) {
+      .nav-container{
+        padding-left: 1rem;
+        padding-right: 1.5rem;
+      }
       .menu-btn{
         display: inline-flex;
         cursor: pointer;
@@ -125,7 +144,7 @@
       </div>
       <div class="nav">
         <div class="nav-group"> 
-          <a href="/home">
+          <a href="/csv-to-json">
             <div class="logo-cont">
               <img class="logo" src="/cp-logo.svg"> Convert Pro 
             </div>
@@ -133,9 +152,10 @@
         </div>
         <div class="nav-group desktop">
           <ul class="desk-nav-list">
-            <li><a name="home" href="/home">Home</a></li>
+            <li><a name="csv-to-json" href="/csv-to-json">CSV to Json</a></li>
+            <li><a name="json-to-csv" href="/json-to-csv">JSON to CSV</a></li>
+            <li><a name="svg-editor" href="/svg-convert">SVG Converter</a></li>
             <li><a name="contact" href="/contact">Contact</a></li>
-            <li><a name="about" href="/about">About Us</a></li>
           </ul>
         </div>
       </div>
@@ -144,9 +164,10 @@
           <img class="close" src="/close.svg" onclick="closeMenu(event)">
         </div>
         <ul class="mob-nav-list">
-          <li><a name="home" href="/home">Home</a></li>
+          <li><a name="csv-to-json" href="/csv-to-json">Csv to Json</a></li>
+          <li><a name="json-to-csv" href="/json-to-csv">JSON to CSV</a></li>
+          <li><a name="svg-editor" href="/svg-convert">SVG Converter</a></li>
           <li><a name="contact" href="/contact">Contact</a></li>
-          <li><a name="about" href="/about">About Us</a></li>
         </ul>
       </div>
       <div id="bd" class="backdrop"></div>
@@ -154,10 +175,10 @@
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
     <script>
-      let path = window.location.pathname
-      document.querySelectorAll('a').forEach(el => {
-        if (path.includes(el.name)) el.className = 'active'
-      })
+      // let path = window.location.pathname
+      // document.querySelectorAll('a').forEach(el => {
+      //   if (path.includes(el.name)) el.className = 'active'
+      // })
       const openMenu = (e) => {
         let drawer = document.getElementsByClassName('nav-group mobile')[0]
         let bd = document.getElementById('bd')

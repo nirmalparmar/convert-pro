@@ -7,12 +7,12 @@
                     <button class="btn" @click="$refs.fileInput.click()">
                         Upload
                     </button>
-                    <input type="file" ref="fileInput" accept=".csv,.txt,.tsv" @change="handleFile($event)">
+                    <input type="file" ref="fileInput" accept=".json,.txt" @change="handleFile($event)">
                 </div>
                 <div v-if="file" class="file-name"> {{ file.name }} <span class="remove" @click="removeFile">remove</span></div>
             </div>
             <div class="textarea" v-if="activeTab == 'input'"> 
-                <textarea name="text" :disabled="disableTextArea" v-model="csvString"></textarea>
+                <textarea name="text" :disabled="disableTextArea" v-model="jsonString"></textarea>
             </div>
             <div class="url-cont" v-if="activeTab == 'url'"> 
                 <div class="url-input">
@@ -21,13 +21,13 @@
                 </div>
             </div>
             <div class="btn-container">
-                <button class="btn" @click="convertCsv" :disabled="!file && !csvString.length" :class="{disabled: !file && !csvString.length}">
+                <button class="btn" @click="convertJson" :disabled="!file && !jsonString.length" :class="{disabled: !file && !jsonString.length}">
                     <SvgComponent icon="right"></SvgComponent> Convert 
                 </button>
             </div>
             <div class="options">
                 <div class="option-title">Parser Setting</div>
-                <Options @configChange="onConfigChange($event)"/>
+                <JsonOption @configChange="onConfigChange($event)"/>
             </div>
         </div>
         <div class="output-container"> 
@@ -36,7 +36,7 @@
             </div>
             <div class="error" v-if="errorMessage.length"> {{ errorMessage }} </div>
             <div class="save-container">
-                Save as: <input v-model="filename" type="text" placeholder="example.json/example.txt"> 
+                Save as: <input v-model="filename" type="text" placeholder="example.csv/example.tsv"> 
                 <button class="btn" @click="downloadFile">Save</button>
             </div>
         </div>
@@ -47,7 +47,7 @@
 import pParser from 'papaparse'
 import SvgComponent from './SvgComponent.vue';
 import Tab from './Tab.vue';
-import Options from './Options.vue';
+import JsonOption from './JsonOption.vue';  
 // let config = {
 // 	delimiter: "",	// auto-detect
 // 	newline: "",	// auto-detect
@@ -80,12 +80,12 @@ export default {
     components:{
         SvgComponent,
         Tab,
-        Options
+        JsonOption,
     },
     data(){
         return{
             file:undefined,
-            csvString:'',
+            jsonString:'',
             fileUrl:'',
             disableTextArea: false,
             activeTab: 'input',
@@ -95,14 +95,14 @@ export default {
                     name:'Text Input',
                     value: 'input'
                 },
-                {
-                    name:'File Input',
-                    value: 'file'
-                },
-                {
-                    name:'URL',
-                    value: 'url'
-                }
+                // {
+                //     name:'File Input',
+                //     value: 'file'
+                // },
+                // {
+                //     name:'URL',
+                //     value: 'url'
+                // }
             ],
             config:{},
             parsedData:[],
@@ -136,7 +136,7 @@ export default {
         // },
         downloadFile(){
             if(this.filename.trim().length){
-                this.download(this.filename, JSON.stringify(this.parsedData))
+                this.download(this.filename, this.parsedData)
             }
         },
         download(filename, text) {
@@ -150,31 +150,33 @@ export default {
         },
         
         onParseComplete(data){
-            if(data.length > 100){
-                this.outputText = JSON.stringify(data.splice(0,100), null, '    ')
-                this.errorMessage = 'Parsed data is too large to display. Displaying only first 100 rows, download file to view all.'
-            } else {
-                this.outputText = JSON.stringify(data, null, '    ')
-            }
+            // if(data.length > 100){
+            //     this.outputText = JSON.stringify(data.splice(0,100), null, '    ')
+            //     this.errorMessage = 'Parsed data is too large to display. Displaying only first 100 rows, download file to view all.'
+            // } else {
+            //     this.outputText = JSON.stringify(data, null, '    ')
+            // }
+            console.log(data)
+            this.outputText = data
             this.parsedData = data
         },
 
-        convertCsv(){
+        convertJson(){
             if(this.activeTab == 'file'){
-                pParser.parse(this.file, {
+                pParser.unparse(this.file, {
                     ...this.config,
                     complete: (data) => { this.onParseComplete(data.data) },
                     worker: true
                 })
             } else if(this.activeTab == 'input'){
-                pParser.parse(this.csvString, 
+                this.outputText = pParser.unparse(JSON.parse(this.jsonString), 
                     {
                         ...this.config,
                         complete: (data) => { this.onParseComplete(data.data) },
                     }
                 )
             } else if(this.activeTab == 'url' && this.fileUrl.trim().length) {
-                pParser.parse(this.fileUrl, {
+                pParser.unparse(this.fileUrl, {
                     download:true,
                     ...this.config,
                     complete: (data) => { this.onParseComplete(data.data) },
