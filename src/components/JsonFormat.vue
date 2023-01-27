@@ -1,7 +1,7 @@
 <template>
     <div class="csv-container"> 
         <div class="input-container"> 
-            <Tab v-if="tabItems.length > 1" :tabItems="tabItems" :activeTab="activeTab" @activeTab="activeTab = $event.value" />
+            <!-- <Tab v-if="tabItems.length > 1" :tabItems="tabItems" :activeTab="activeTab" @activeTab="activeTab = $event.value" />
             <div class="file-input-container" v-if="activeTab == 'file'">
                 <div class="file-input">
                     <button class="btn" @click="$refs.fileInput.click()">
@@ -10,17 +10,17 @@
                     <input type="file" ref="fileInput" accept=".json,.txt" @change="handleFile($event)">
                 </div>
                 <div v-if="file" class="file-name"> {{ file.name }} <span class="remove" @click="removeFile">remove</span></div>
-            </div>
+            </div> -->
             <div class="textarea" v-if="activeTab == 'input'"> 
-                <JsonEditor v-model="jsonString"></JsonEditor>
+                <JsonEditor v-model="jsonStringLeft" ref="left" :darkMode="darkMode"></JsonEditor>
             </div>
-            <div class="url-cont" v-if="activeTab == 'url'"> 
+            <!-- <div class="url-cont" v-if="activeTab == 'url'"> 
                 <div class="url-input">
                     <div class="url-icon"><SvgComponent icon="link" /></div>
                     <input type="url" v-model="fileUrl" placeholder="Paste Url">
                 </div>
-            </div>
-            <div class="btn-container">
+            </div> -->
+            <!-- <div class="btn-container">
                 <button class="btn" @click="convertJson" :class="{disabled: !file && !jsonString.length}">
                     <SvgComponent icon="right"></SvgComponent> Convert 
                 </button>
@@ -28,71 +28,50 @@
             <div class="options">
                 <div class="option-title">Parser Setting</div>
                 <JsonOption @configChange="onConfigChange($event)"/>
+            </div> -->
+        </div>
+        <div class="btn-container">
+            <div> 
+                <input type="checkbox" v-model="darkMode" @change="changeTheme"> Dark Mode
             </div>
+            <button class="btn" @click="formatJson">
+                <SvgComponent icon="right"></SvgComponent> Format 
+            </button>
+            <button class="btn" @click="validateJson">
+             Validate 
+            </button>
+            <button class="btn" @click="downloadFile">
+             Download 
+            </button>
         </div>
         <div class="output-container"> 
             <div class="text-container">
-                <JsonEditor mode="code" v-model="parsedData" :readOnly="true"></JsonEditor>
+                <JsonEditor mode="code" v-model="jsonStringRight" :readOnly="true" ref="right" :darkMode="darkMode"></JsonEditor>
             </div>
-            <div class="error" v-if="errorMessage.length"> {{ errorMessage }} </div>
-            <div class="save-container">
+            <!-- <div class="save-container">
                 Save as: <input v-model="filename" type="text" placeholder="example.csv/example.tsv"> 
                 <button class="btn" @click="downloadFile">Save</button>
-                <div v-if="downloadwip">Processing please wait...</div>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
 
 <script>
-import pParser from 'papaparse'
 import SvgComponent from './SvgComponent.vue';
-import Tab from './Tab.vue';
-import JsonOption from './JsonOption.vue'; 
 import JsonEditor from './JsonEditor.vue';
-// let config = {
-// 	delimiter: "",	// auto-detect
-// 	newline: "",	// auto-detect
-// 	quoteChar: '"',
-// 	escapeChar: '"',
-// 	header: false,
-// 	transformHeader: undefined,
-// 	dynamicTyping: false,
-// 	preview: 0,
-// 	encoding: "",
-// 	worker: false,
-// 	comments: false,
-// 	step: undefined,
-// 	complete: undefined,
-// 	error: undefined,
-// 	download: false,
-// 	downloadRequestHeaders: undefined,
-// 	downloadRequestBody: undefined,
-// 	skipEmptyLines: false,
-// 	chunk: undefined,
-// 	chunkSize: undefined,
-// 	fastMode: undefined,
-// 	beforeFirstChunk: undefined,
-// 	withCredentials: undefined,
-// 	transform: undefined,
-// 	// delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
-// }
 
 export default {
     components:{
         SvgComponent,
-        Tab,
-        JsonOption,
         JsonEditor
     },
     data(){
         return{
             file:undefined,
-            jsonString:[],
-            fileUrl:'',
-            disableTextArea: false,
+            jsonStringLeft:'',
+            jsonStringRight:'',
+            // fileUrl:'',
             activeTab: 'input',
-            fileText: '',
             tabItems:[
                 {
                     name:'Text Input',
@@ -107,11 +86,9 @@ export default {
                 //     value: 'url'
                 // }
             ],
-            config:{},
-            parsedData:"",
             errorMessage: '',
-            filename:'',
-            downloadwip: false
+            filename:'jsonformatter.json',
+            darkMode:false
         }
     },
     mounted(){
@@ -132,11 +109,11 @@ export default {
         },
         downloadFile(){
             if(this.filename.trim().length){
-                if(this.parsedData && typeof this.parsedData == 'string'){
-                    this.download(this.filename, this.parsedData)
+                if(this.jsonStringRight && typeof this.jsonStringRight == 'string'){
+                    this.download(this.filename, this.jsonStringRight)
                 }
-                else if(this.parsedData){
-                    this.download(this.filename, JSON.stringify(this.parsedData))
+                else if(this.jsonStringRight){
+                    this.download(this.filename, JSON.stringify(this.jsonStringRight))
                 }
             }
         },
@@ -146,10 +123,8 @@ export default {
             element.setAttribute('download', filename);
             element.style.display = 'none';
             document.body.appendChild(element);
-            this.downloadwip = true
             element.click();
             document.body.removeChild(element);
-            this.downloadwip = false
         },
         
         onParseComplete(data){
@@ -162,32 +137,19 @@ export default {
             this.parsedData = data
         },
 
-        convertJson(){
-            console.log('convert', this.jsonString)
-            if(this.activeTab == 'file'){
-                pParser.unparse(this.file, {
-                    ...this.config,
-                    complete: (data) => { this.onParseComplete(data.data) },
-                    worker: true
-                })
-            } else if(this.activeTab == 'input'){
-                let outputText = pParser.unparse(this.jsonString, 
-                    {
-                        ...this.config
-                    }
-                )
-                this.onParseComplete(outputText)
-            } else if(this.activeTab == 'url' && this.fileUrl.trim().length) {
-                pParser.unparse(this.fileUrl, {
-                    download:true,
-                    ...this.config,
-                    complete: (data) => { this.onParseComplete(data.data) },
-                })
-            }
+        validateJson(){
+            // this.$refs.left.validateJson()
+        },
+        formatJson(){
+            this.jsonStringRight = this.jsonStringLeft
+            // this.$refs.right.formatJson()
         },
         onConfigChange(config){
             this.config = config
-        }
+        },
+        // changeTheme(){
+        //     if(theme)
+        // }
     }
     
 }
@@ -196,7 +158,7 @@ export default {
 <style lang="less" scoped>
 .csv-container{
     display: flex;
-    width: 85%;
+    width: 95%;
     height: 100%;
     margin: 0 auto;
     justify-content: space-between;
@@ -205,54 +167,56 @@ export default {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        width: 47%;
-        .file-input-container{
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            .file-input{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                .btn{
-                    background: #3f51b5;
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    color: #fff;
-                    padding: 10px;
-                    border: none;
-                    outline: none;
-                    font-weight: 500;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                input{
-                    width: 0;
-                    height: 0;
-                    visibility: hidden;
-                    display: none;
-                }
-            }
+        width: 48%;
+        height: 100%;
+        margin-bottom: 0.2rem;
+        // .file-input-container{
+        //     display: flex;
+        //     align-items: center;
+        //     gap: 10px;
+        //     .file-input{
+        //         display: flex;
+        //         align-items: center;
+        //         justify-content: center;
+        //         .btn{
+        //             background: #3f51b5;
+        //             display: flex;
+        //             align-items: center;
+        //             gap: 10px;
+        //             color: #fff;
+        //             padding: 10px;
+        //             border: none;
+        //             outline: none;
+        //             font-weight: 500;
+        //             border-radius: 4px;
+        //             cursor: pointer;
+        //         }
+        //         input{
+        //             width: 0;
+        //             height: 0;
+        //             visibility: hidden;
+        //             display: none;
+        //         }
+        //     }
 
-            .file-name{
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                color: #3f51b5;
+        //     .file-name{
+        //         display: flex;
+        //         align-items: center;
+        //         gap: 10px;
+        //         color: #3f51b5;
 
-                .remove{
-                    font-weight: 600;
-                    text-decoration: underline;
-                    font-size: 12px;
-                    cursor: pointer;
-                }
-            }
-        }
+        //         .remove{
+        //             font-weight: 600;
+        //             text-decoration: underline;
+        //             font-size: 12px;
+        //             cursor: pointer;
+        //         }
+        //     }
+        // }
 
         .textarea{
             width: 100%;
-            min-height: 350px;
+            height: 98%;
             box-sizing: border-box;
             
         }
@@ -276,27 +240,6 @@ export default {
                 border-radius: 0 5px 5px 0;
             }
         }
-        .btn-container{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            // .btn{
-            //     padding: 10px 15px;
-            //     background: #0C0ADB;
-            //     font-weight: 500;
-            //     border: none;
-            //     border-radius: 4px;
-            //     color: #fff;
-            //     cursor: pointer;
-            //     display: inline-flex;
-            //     align-items: center;
-
-            //     &:hover{
-            //         background: #0a08f0;
-            //     }
-            // }
-        }
 
         .options{
             padding-bottom: 20px;
@@ -307,11 +250,23 @@ export default {
             }
         }
     }
+    .btn-container{
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+        gap: 10px;
+        // align-items: center;
+        justify-content: center;
+       
+    }
+
     .output-container{
-        width: 47%;
+        width: 48%;
+        height: 100%;
+        display: flex;
 
         .text-container{
-            height: 350px;
+            height: 98%;
             width: 100%;
             box-sizing: border-box;
             box-shadow: 0 0 24px #00000012;

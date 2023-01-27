@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ConvertCSVtoJSON from '../views/ConvertCSVtoJSON.vue'
 import Contact from '../views/Contact.vue'
-import ConvertJSONtoCSV from '../views/ConvertJSONtoCSV.vue'
 
 const DEFAULT_TITLE = 'Convert Pro - Free CSV, JSON, SVG Converter!'
 const router = createRouter({
@@ -10,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name:'home',
-      redirect: '/csv-to-json'
+      redirect: '/jsonformatter'
 
     },
     {
@@ -19,7 +17,7 @@ const router = createRouter({
       meta: {
         title: 'Convert Pro - CSV to JSON',
       },
-      component: ConvertCSVtoJSON
+      component: () => import('../views/ConvertCSVtoJSON.vue') 
     },
     {
       path: '/json-to-csv',
@@ -27,7 +25,15 @@ const router = createRouter({
       meta: {
         title: 'Convert Pro - JSON to CSV',
       },
-      component: ConvertJSONtoCSV
+      component: () => import('../views/ConvertJSONtoCSV.vue')
+    },
+    {
+      path: '/jsonformatter',
+      name: 'jsonformatter',
+      meta: {
+        title: 'JSON Formatter',
+      },
+      component: () => import('../views/JsonFormatter.vue')
     },
     {
       path: '/contact',

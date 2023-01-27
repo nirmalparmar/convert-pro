@@ -12,7 +12,9 @@
                 <div v-if="file" class="file-name"> {{ file.name }} <span class="remove" @click="removeFile">remove</span></div>
             </div>
             <div class="textarea" v-if="activeTab == 'input'"> 
-                <textarea name="text" :disabled="disableTextArea" v-model="csvString"></textarea>
+                <!-- <JsonEditor mode="code" v-model="csvString"></JsonEditor> -->
+                <Editor v-model="csvString" ></Editor>
+                <!-- <textarea name="text" :disabled="disableTextArea" v-model="csvString"></textarea> -->
             </div>
             <div class="url-cont" v-if="activeTab == 'url'"> 
                 <div class="url-input">
@@ -32,12 +34,14 @@
         </div>
         <div class="output-container"> 
             <div class="text-container">
-                <textarea v-model="outputText"></textarea>
+                <JsonEditor mode="code" type="text" v-model="outputText" :readOnly="true"></JsonEditor>
+                <!-- <textarea v-model="outputText"></textarea> -->
             </div>
             <div class="error" v-if="errorMessage.length"> {{ errorMessage }} </div>
             <div class="save-container">
                 Save as: <input v-model="filename" type="text" placeholder="example.json/example.txt"> 
                 <button class="btn" @click="downloadFile">Save</button>
+                <div v-if="downloadwip">Processing please wait...</div>
             </div>
         </div>
     </div>
@@ -48,6 +52,8 @@ import pParser from 'papaparse'
 import SvgComponent from './SvgComponent.vue';
 import Tab from './Tab.vue';
 import Options from './Options.vue';
+import JsonEditor from './JsonEditor.vue';
+import Editor from './Editor.vue';
 // let config = {
 // 	delimiter: "",	// auto-detect
 // 	newline: "",	// auto-detect
@@ -80,7 +86,9 @@ export default {
     components:{
         SvgComponent,
         Tab,
-        Options
+        Options,
+        JsonEditor,
+        Editor
     },
     data(){
         return{
@@ -106,9 +114,10 @@ export default {
             ],
             config:{},
             parsedData:[],
-            outputText:'{}',
             errorMessage: '',
-            filename:''
+            filename:'',
+            outputText:[],
+            downloadwip:false
         }
     },
     mounted(){
@@ -127,19 +136,17 @@ export default {
             this.file = undefined
             this.disableTextArea = false
         },
-        // readTextFile(file){
-        //     let fr = new FileReader();
-        //     fr.onload = () => {
-        //         this.csvString = fr.result;
-        //     }
-        //     fr.readAsText(file)
-        // },
         downloadFile(){
             if(this.filename.trim().length){
-                this.download(this.filename, JSON.stringify(this.parsedData))
+                if(this.parsedData && typeof this.parsedData == 'string'){
+                    this.download(this.filename, this.parsedData)
+                }else if(this.parsedData){
+                    this.download(this.filename, JSON.stringify(this.parsedData))
+                }
             }
         },
         download(filename, text) {
+            this.downloadwip = true
             var element = document.createElement('a');
             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
             element.setAttribute('download', filename);
@@ -147,14 +154,15 @@ export default {
             document.body.appendChild(element);
             element.click();
             document.body.removeChild(element);
+            this.downloadwip = false
         },
         
         onParseComplete(data){
             if(data.length > 100){
-                this.outputText = JSON.stringify(data.splice(0,100), null, '    ')
+                this.outputText = data.splice(0,100)
                 this.errorMessage = 'Parsed data is too large to display. Displaying only first 100 rows, download file to view all.'
             } else {
-                this.outputText = JSON.stringify(data, null, '    ')
+                this.outputText = data
             }
             this.parsedData = data
         },
@@ -192,65 +200,16 @@ export default {
 <style lang="less" scoped>
 .csv-container{
     display: flex;
-    width: 95%;
+    width: 85%;
     height: 100%;
     margin: 0 auto;
     justify-content: space-between;
-
-   
-
-    // .container{
-    //     width: 50%;
-    //     display: flex;
-    //     flex-direction: column;
-    //     background: #3f51b5;
-    //     color: #fff;
-    //     border-radius: 4px;
-
-    //     .input-area{
-    //         width: 100%;
-    //         border-radius: inherit;
-
-    //         textarea{
-    //             width: 100%;
-    //             border: none;
-    //             outline: none;
-    //             color: #fff;
-    //             height: 300px;
-    //             resize: none;
-    //             background: #3f51b5;
-    //         }
-    //     }
-    //     .input-container{
-    //         display: flex;
-    //         box-shadow: inset 0px 6px 6px -6px rgb(0 0 0 / 50%), 0px 3px 0 0 #2e4765;
-    //         .btn{
-    //             width: fit-content;
-    //             white-space: nowrap;
-    //             padding: 10px;
-    //             font-weight: 600;
-    //         }
-
-    //         .input{
-    //             width: 100%;
-
-    //             input{
-    //                 width: 100%;
-    //                 padding: 10px;
-    //                 background: transparent;
-    //                 color: #fff;
-    //                 border: none;
-    //                 outline: none;
-    //             }
-    //         }
-    //     }
-    // }
 
     .input-container{
         display: flex;
         flex-direction: column;
         gap: 10px;
-        width: 55%;
+        width: 47%;
         .file-input-container{
             display: flex;
             align-items: center;
@@ -297,14 +256,9 @@ export default {
 
         .textarea{
             width: 100%;
-            height: 220px;
-
-            textarea{
-                width: 100%;
-                height: 100%;
-                resize: none;
-                padding: 5px;
-            }
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
         }
         .url-input{
             display: flex;
@@ -331,21 +285,21 @@ export default {
             align-items: center;
             justify-content: center;
             padding: 20px;
-            .btn{
-                padding: 10px 15px;
-                background: #0C0ADB;
-                font-weight: 500;
-                border: none;
-                border-radius: 4px;
-                color: #fff;
-                cursor: pointer;
-                display: inline-flex;
-                align-items: center;
+            // .btn{
+            //     padding: 10px 15px;
+            //     background: #0C0ADB;
+            //     font-weight: 500;
+            //     border: none;
+            //     border-radius: 4px;
+            //     color: #fff;
+            //     cursor: pointer;
+            //     display: inline-flex;
+            //     align-items: center;
 
-                &:hover{
-                    background: #0a08f0;
-                }
-            }
+            //     &:hover{
+            //         background: #0a08f0;
+            //     }
+            // }
         }
 
         .options{
@@ -358,7 +312,8 @@ export default {
         }
     }
     .output-container{
-        width: 40%;
+        width: 50%;
+        margin-top: 50px;
 
         .text-container{
             height: 450px;
@@ -384,21 +339,21 @@ export default {
                 padding: 10px;
             }
         }
-        .btn{
-            padding: 10px 15px;
-            background: #0C0ADB;
-            font-weight: 500;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
+        // .btn{
+        //     padding: 10px 15px;
+        //     background: #0C0ADB;
+        //     font-weight: 500;
+        //     border: none;
+        //     border-radius: 4px;
+        //     color: #fff;
+        //     cursor: pointer;
+        //     display: inline-flex;
+        //     align-items: center;
 
-            &:hover{
-                background: #0a08f0;
-            }
-        }
+        //     &:hover{
+        //         background: #0a08f0;
+        //     }
+        // }
         .save-container{
             display: flex;
             gap: 5px;
@@ -429,6 +384,7 @@ export default {
         }
         .output-container{
             width: 100%;
+            margin-top: 0;
         }
         
     }
