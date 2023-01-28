@@ -1,34 +1,9 @@
 <template>
     <div class="csv-container"> 
         <div class="input-container"> 
-            <!-- <Tab v-if="tabItems.length > 1" :tabItems="tabItems" :activeTab="activeTab" @activeTab="activeTab = $event.value" />
-            <div class="file-input-container" v-if="activeTab == 'file'">
-                <div class="file-input">
-                    <button class="btn" @click="$refs.fileInput.click()">
-                        Upload
-                    </button>
-                    <input type="file" ref="fileInput" accept=".json,.txt" @change="handleFile($event)">
-                </div>
-                <div v-if="file" class="file-name"> {{ file.name }} <span class="remove" @click="removeFile">remove</span></div>
-            </div> -->
             <div class="textarea" v-if="activeTab == 'input'"> 
                 <JsonEditor v-model="jsonStringLeft" ref="left" :darkMode="darkMode"></JsonEditor>
             </div>
-            <!-- <div class="url-cont" v-if="activeTab == 'url'"> 
-                <div class="url-input">
-                    <div class="url-icon"><SvgComponent icon="link" /></div>
-                    <input type="url" v-model="fileUrl" placeholder="Paste Url">
-                </div>
-            </div> -->
-            <!-- <div class="btn-container">
-                <button class="btn" @click="convertJson" :class="{disabled: !file && !jsonString.length}">
-                    <SvgComponent icon="right"></SvgComponent> Convert 
-                </button>
-            </div>
-            <div class="options">
-                <div class="option-title">Parser Setting</div>
-                <JsonOption @configChange="onConfigChange($event)"/>
-            </div> -->
         </div>
         <div class="btn-container">
             <div> 
@@ -48,10 +23,6 @@
             <div class="text-container">
                 <JsonEditor mode="code" v-model="jsonStringRight" :readOnly="true" ref="right" :darkMode="darkMode"></JsonEditor>
             </div>
-            <!-- <div class="save-container">
-                Save as: <input v-model="filename" type="text" placeholder="example.csv/example.tsv"> 
-                <button class="btn" @click="downloadFile">Save</button>
-            </div> -->
         </div>
     </div>
 </template>
@@ -159,7 +130,7 @@ export default {
 .csv-container{
     display: flex;
     width: 95%;
-    height: 100%;
+    // height: 100%;
     margin: 0 auto;
     justify-content: space-between;
 
@@ -216,9 +187,8 @@ export default {
 
         .textarea{
             width: 100%;
-            height: 98%;
+            height: 650px;
             box-sizing: border-box;
-            
         }
         .url-input{
             display: flex;
@@ -240,15 +210,6 @@ export default {
                 border-radius: 0 5px 5px 0;
             }
         }
-
-        .options{
-            padding-bottom: 20px;
-            
-            .option-title{
-                padding: 15px 0;
-                font-weight: 600;
-            }
-        }
     }
     .btn-container{
         display: flex;
@@ -258,6 +219,9 @@ export default {
         // align-items: center;
         justify-content: center;
        
+        .btn{
+            width: 100px;
+        }
     }
 
     .output-container{
@@ -266,7 +230,7 @@ export default {
         display: flex;
 
         .text-container{
-            height: 98%;
+            height: 650px;
             width: 100%;
             box-sizing: border-box;
             box-shadow: 0 0 24px #00000012;
@@ -289,35 +253,7 @@ export default {
                 padding: 10px;
             }
         }
-        // .btn{
-        //     padding: 10px 15px;
-        //     background: #0C0ADB;
-        //     font-weight: 500;
-        //     border: none;
-        //     border-radius: 4px;
-        //     color: #fff;
-        //     cursor: pointer;
-        //     display: inline-flex;
-        //     align-items: center;
-
-        //     &:hover{
-        //         background: #0a08f0;
-        //     }
-        // }
-        .save-container{
-            display: flex;
-            gap: 5px;
-            padding: 10px;
-            align-items: center;
-
-            input{
-                border: none;
-                border-bottom: 1px solid;
-                padding: 5px;
-                outline: none;
-                background: transparent;
-            }
-        }
+        
         .error{
             font-size: 12px;
             color: #ff2d2d;
@@ -327,13 +263,23 @@ export default {
 
     @media (max-width: 1000px) {
         
-        flex-wrap: wrap;
+        // flex-wrap: wrap;
+        flex-direction: column;
         width: 80%;
         .input-container{
             width: 100%;
+            height: fit-content;
+
+            .textarea{
+                height: 350px;
+            }
         }
         .output-container{
             width: 100%;
+            height: fit-content;
+            .text-container{
+                height: 350px;
+            }
         }
         
     }

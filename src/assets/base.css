@@ -72,3 +72,15 @@ body {
 .btn:hover{
   background: #222;
 }
+.delete-marker{
+  position: absolute;
+  background-color: rgba(211, 68, 68, 0.738);
+}
+.new-marker{
+  position: absolute;
+  background-color: #25ff0075;
+}
+.replace-marker{
+  position: absolute;
+  background-color: #334ade96;
+}

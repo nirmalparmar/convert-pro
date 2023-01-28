@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name:'home',
-      redirect: '/jsonformatter'
+      redirect: '/json-diff'
 
     },
     {
@@ -34,6 +34,14 @@ const router = createRouter({
         title: 'JSON Formatter',
       },
       component: () => import('../views/JsonFormatter.vue')
+    },
+    {
+      path: '/json-diff',
+      name: 'json-diff',
+      meta: {
+        title: 'JSON Diff Checker - Convert - Pro',
+      },
+      component: () => import('../views/JsonDiffChecker.vue')
     },
     {
       path: '/contact',

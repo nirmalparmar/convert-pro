@@ -2,29 +2,28 @@
     <div class="container">
         <div class="title-container">
             <div class="title"> 
-                Convert JSON To CSV
+                JSON Diff Checker
             </div>
             <div class="desc"> 
-                Upload json/text file or paste text in input area and submit. 
+                Paste text in input area to compare. 
             </div>
         </div>
-        <JSONParser/>
+        <JsonDiff/>
         <Footer></Footer>
     </div>
 </template>
 <script>
-import JSONParser from '../components/JSONParser.vue';
+import JsonDiff from '../components/JsonDiff.vue';
 import Footer from '../components/Footer.vue';
 export default {
     components:{
-        JSONParser,
+        JsonDiff,
         Footer
     }
 }
 </script>
-
 <style lang="less" scoped>
-.container{
+    .container{
         display: flex;
         flex-direction: column;
         height: 100%;

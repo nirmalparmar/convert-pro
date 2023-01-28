@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="sub-container">
         <div class="title-container">
             <div class="title"> 
                 JSON Formatter
@@ -9,18 +9,21 @@
             </div>
         </div>
         <JsonFormat/>
+        <Footer></Footer>
     </div>
 </template>
 <script>
 import JsonFormat from '../components/JsonFormat.vue';
+import Footer from '../components/Footer.vue';
 export default {
     components:{
-        JsonFormat
+        JsonFormat,
+        Footer
     }
 }
 </script>
 <style lang="less" scoped>
-    .container{
+    .sub-container{
         display: flex;
         flex-direction: column;
         height: 100%;

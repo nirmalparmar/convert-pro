@@ -197,7 +197,7 @@ export default {
 .csv-container{
     display: flex;
     width: 85%;
-    height: 100%;
+    // height: 100%;
     margin: 0 auto;
     justify-content: space-between;
 
@@ -371,8 +371,7 @@ export default {
     }
 
     @media (max-width: 1000px) {
-        
-        flex-wrap: wrap;
+        flex-direction: column;
         width: 80%;
         .input-container{
             width: 100%;

@@ -4,8 +4,9 @@
 
 <script>
 import JSONEditor from "jsoneditor";
-import 'brace/theme/ambiance'
-import 'brace/theme/cobalt'
+import 'brace'
+import 'brace/theme/dawn'
+import 'brace/theme/dracula'
 
 export default {
     name: "JSONEditor",
@@ -28,11 +29,17 @@ export default {
             default: true
         }
     },
+    watch:{
+        darkMode(a,b){
+            a ? this.editor.aceEditor.setTheme('ace/theme/dracula')
+            : this.editor.aceEditor.setTheme('ace/theme/dawn')
+        }
+    },
     mounted() {
         let options = {
             mode: this.mode,
             onChange: this.onChange,
-            theme: this.darkMode ? 'ace/theme/ambiance' : 'ace/theme/cobalt'
+            theme: this.darkMode ? 'ace/theme/dracula' : 'ace/theme/dawn'
         }
         this.editor = new JSONEditor(this.$refs["editor"], options);
         this.editor.set(this.modelValue);
@@ -41,7 +48,6 @@ export default {
     updated() {
         if(!this.internalChange){
             this.editor.set(this.modelValue)
-            this.darkMode ? this.editor.aceEditor.setTheme('ace/theme/ambiance') : this.editor.aceEditor.setTheme('ace/theme/cobalt')
         } 
         this.internalChange = false;
     },
@@ -86,6 +92,20 @@ export default {
             }).catch(err => {
                 console.log(err)
             })
+        },
+        addRangeMarker(marker, sr, sc, er, ec){
+            var Range = ace.require('ace/range').Range;
+            let range = new Range(sr, sc, er,ec)
+            this.editor.aceEditor.getSession().addMarker(range, marker, "text");
+        },
+        removeMarkers(){
+            const prevMarkers = this.editor.aceEditor.getsession().getMarkers();
+            if (prevMarkers) {
+                const prevMarkersArr = Object.keys(prevMarkers);
+                for (let item of prevMarkersArr) {
+                    this.editor.aceEditor.getsession().removeMarker(prevMarkers[item].id);
+                }
+            }
         }
     }
 }

@@ -9,13 +9,16 @@
             </div>
         </div>
         <CSVParser/>
+        <Footer></Footer>
     </div>
 </template>
 <script>
 import CSVParser from '../components/CSVParser.vue';
+import Footer from '../components/Footer.vue';
 export default {
     components:{
-        CSVParser
+        CSVParser,
+        Footer
     }
 }
 </script>
