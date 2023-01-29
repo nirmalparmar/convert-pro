@@ -4,7 +4,6 @@
 
 <script>
 import JSONEditor from "jsoneditor";
-import 'brace'
 import 'brace/theme/dawn'
 import 'brace/theme/dracula'
 

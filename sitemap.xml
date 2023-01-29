@@ -9,27 +9,32 @@
 
 <url>
   <loc>https://www.convert-pro.com/</loc>
-  <lastmod>2023-01-27T21:18:21+00:00</lastmod>
+  <lastmod>2023-01-28T20:20:51+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
   <loc>https://www.convert-pro.com/csv-to-json</loc>
-  <lastmod>2023-01-27T21:18:21+00:00</lastmod>
+  <lastmod>2023-01-28T20:20:51+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.convert-pro.com/json-to-csv</loc>
-  <lastmod>2023-01-27T21:18:21+00:00</lastmod>
+  <lastmod>2023-01-28T20:20:51+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.convert-pro.com/jsonformatter</loc>
-  <lastmod>2023-01-27T21:18:21+00:00</lastmod>
+  <lastmod>2023-01-28T20:20:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.convert-pro.com/json-diff</loc>
+  <lastmod>2023-01-28T20:20:51+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://www.convert-pro.com/contact</loc>
-  <lastmod>2023-01-27T21:18:21+00:00</lastmod>
+  <lastmod>2023-01-28T20:20:51+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 

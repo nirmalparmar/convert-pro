@@ -46,7 +46,7 @@ export default {
         highlightChange(){
             let rightResult = parse(this.$refs.right.editor.getText())
             let leftResult = parse(this.$refs.left.editor.getText())
-            console.log(this.$refs.left.editor)
+            // console.log(this.$refs.left.editor)
             
             for (let d of this.diffs){
                 if(d.kind == 'E'){
@@ -98,7 +98,7 @@ export default {
 
 <style lang="less" scoped>
     .diff-container{
-        width: 100%;
+        width: 98%;
         // height: 100%;
         display: flex;
         margin: 0 auto;
@@ -119,12 +119,12 @@ export default {
         .left{
             width: 48%;
             height: 600px;
-            margin: 0 10px;
+            // margin: 0 10px;
         }
         .right{
             width: 48%;
             height: 600px;
-            margin: 0 10px;
+            // margin: 0 10px;
         }
     }
     @media (max-width: 1000px) {

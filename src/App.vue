@@ -1,9 +1,11 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
+import HeadMeta from './components/HeadMeta.vue';
 </script>
 
 <template>
   <div class="main-container">
+    <HeadMeta />
     <div class="router-view">
       <RouterView />
     </div>
